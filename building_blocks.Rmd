@@ -1,0 +1,601 @@
+---
+title: "R building blocks"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+## What is a programming language?
+
+R is a programming language. You probably have heard of the term - A programming language is a set of defined instructions or "rules" that a computer can execute.
+
+## How is R different from other programming languages?
+
+R is a friendly language that can be run directly (once installed, of course) without any further steps and does not require you to be finished with the script in order to run chunks of it. Perfect for data analysis or going back and forward with your code.
+
+R is also **very** readable and its abstraction level is high. We humans love and benefit from that. We can easily tell R to "sum", "plot", or "print". This might look like obvious instructions but these simple operations would take a good chunk of code in other languages.
+
+##  What is R famous for?
+
+R was designed with the purpose of having a free and open-sourced (open for collaborations) programming language focused specifically in statistical analyses.
+
+The reason is so widely used is precisely that - because it's free and people have made it "theirs" by implementing functions targeting quite niche fields - such as many in bioinformatics.
+
+R shines in managing big data, analysing it, and very importantly - visualising it.
+
+## The purpose of this course
+
+We believe that everyone should be able to explore their own data. At the end of this course, we hope you can imagine yourself managing your data to get informative summaries, and finding the *perfect* way to make that plot fit into your figure - without having to go 10 times with your local bioinformatician :-). 
+
+Most importantly, this course should give you a taste for programming and what R is able to offer.
+
+\newpage
+
+# Introduction to R
+
+## Variables
+
+The most basic operation you can do in any programming language is to define a **variable**. A variable (same as in maths) is a "name" we give some piece of information and to which R will allocate a place in memory for. In R, there are two ways of assigning a variable, one is the same we usually do in maths `x = 100`, and the other one is `x <- 100` which is meant to provide some sense of direction, meaning "this piece of information (e.g. `100`) is going to be assigned into this variable name (e.g. `x`), and not viceversa". The most used and recommended form for it in R is the arrow operant `<-`.
+
+Variable names are meant to be short but informative and comply with the language's limitations. It's not a trivial task sometimes but it's *very* important to ensure readability in your code. In R, variable names have to start with a letter (no numbers, no other characters) and can be a combination of letters, digits, period (.) and underscores (_) - Any other special characters are not allowed.
+
+There are also forbidden words when it comes to variable names. These reserved words for the syntax of R and will be confused (or simply throw an error) when used. Examples of these include "if", "for", "while", "break", "TRUE", "NULL", "Inf", and many more. You can see a list of all reserved words by typing `?reserved` into the R command prompt. In addition to it, it's **highly** recommended to **never** use variable names that are also a function as this can cause a conflict when executing (and reading) your code.
+
+## Variable classes
+
+R classifies information by type (or class) to know what sort of operations can be performed with your variables. The most basic classes of variables are numbers, characters (including those with multiple characters such as "hello world"), factors (discrete but with multiple options. E.g. `groupA`, `groupB` and `groupC`), and booleans (`TRUE` or `FALSE`). 
+
+You can easily interchange between some of these classes using `as.numeric(your variable here)`, `as.character(your variable here)`, and `as.factor(your variable here)` (although, sometimes not directly).
+
+One thing we have to make peace with when programming, is that the computer is completely oblivious to what we are doing. It just executes what you write. For example, if R reads a "1" (surrounded by quotes), it will assume it is of a "character" class - although we might think it is obvious it is a number (this is a common issue specially when reading from files). We have to make sure that we are in agreement with R at all time, for this, the `class()` or `typeof()` functions comes in handy.
+
+```{r}
+a <- "1"
+paste("Here is a number: ", a, " of type: ", class(a), sep="")
+
+b <- as.numeric(a)
+paste("Whoops, here it goes again: ", b, " as type: ", class(b), sep="")
+
+c <- 2
+paste("Here goes another number: ", c, 
+      ", which I proudly declared correctly as type: ", class(c), sep="")
+```
+
+We say "function" to refer to a set of defined instructions which usually takes an input, performs an operation with it and (usually) returns an output. In this material, you can assume we are talking of a function when we write parentheses following a word. For example, `as.numeric()` is a function that takes a variable (input), in this case `a`, converts it into a number (performs an operation), and returns a number (output), which is now stored in `b`.
+
+## One dimensional data structures
+
+Or "collections". One can define two types of one-dimensional collections in R: one is called a *vector* and the other one is a *list*. They differ quite a bit on how to access them and the sort of operations one can do with the items within them. But there are no rules on what you can put into them - They can store from simple numbers to complex objects.
+
+You can define a vector using the function `c()`, which stands for "combine", and a list with the function `list()`.
+
+Here are some basic operations one can do with a vector:
+```{r}
+# You can define a vector by doing
+a_vector <- c(1,2,3)
+# You can concatenate new items by doing
+a_vector <- c(a_vector, "Hello world!", TRUE)
+
+# Print it simply by
+print(paste("This vectors has many items:", 
+            paste(a_vector, collapse = ", ")))
+
+```
+
+Access items using the brackets `[]`. The first item is indexed as 1
+```{r}
+paste("The second item of the vector is: ", a_vector[2])
+```
+
+Access a slice of the vector by using the brackets, the position where to start, colon, the position where to end
+```{r}
+print(paste("The items from the position 2 to the 4th are: ",
+            paste(a_vector[2:4], collapse = ", ")))
+```
+
+Similarly (but not equally) to vectors, lists are created and managed similarly:
+```{r}
+# Define a list
+a_list <- list(1,2,3)
+# Define another list
+another_list <- list("Hello world!", TRUE)
+# Concatenate two lists to append items
+final_list <- append(a_list, another_list)
+
+# Print
+print(paste("This list has many items:",
+            paste(final_list, collapse = ", ")))
+```
+
+Access the second item or a slice
+```{r}
+paste("The second item of the list is: ", final_list[2])
+
+print(paste("The items from the position 2 to the 4th are: ",
+      paste(final_list[2:4], collapse = ", ")))
+```
+
+Vectors and lists sometimes can get long and confusing. Therefore, we can name the items in them to make it easier to access them simply by passing the names you want to give to your items to `names()`:
+```{r}
+names(a_vector) <- c("my_fav_number", 
+                     "my_second_fav_number", 
+                     "my_third_fav_number", 
+                     "what_i_want_to_say", 
+                     "im_learning_so_much")
+a_vector
+```
+
+You can also define them named from the beginning (using the form [name] = [value]):
+```{r}
+languages <- c("Sweden" = "Swedish",
+               "USA" = "English",
+               "Mexico" = "Spanish",
+               "Brazil" = "Portuguese",
+               "Italy" = "Italian")
+languages
+```
+
+We can then access them quite easily!
+```{r}
+paste("In", names(languages["Mexico"]), "they speak", languages["Mexico"])
+```
+
+Same with lists:
+```{r}
+names(final_list) <- c("my_fav_number", 
+                       "my_second_fav_number", 
+                       "my_third_fav_number", 
+                       "what_i_want_to_say", 
+                       "im_learning_so_much")
+final_list
+```
+
+Lists can also be defined with names
+```{r}
+favourite_foods <- list("Raquel" = "Pasta",
+                       "Anita" = "Pizza",
+                       "David" = "Burgers",
+                       "Vivien" = "Ramen")
+favourite_foods
+```
+
+Did you notice that in the output the names start with a $? That's because, to access any favorite food, you do:
+```{r}
+paste("Vivien's favourite food is: ", favourite_foods$Vivien)
+```
+
+Or using double brackets 
+```{r}
+paste("Raquel's favourite food is: ", favourite_foods[["Raquel"]])
+```
+
+An important function to remember is `length()` which will tell you how long a vector or a list is
+```{r}
+paste("We have registered", length(favourite_foods), "favourite foods")
+```
+
+And `table()`, which will summarize how many times a certain value is in a vector (not for lists)
+```{r}
+true_or_false <- c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, 
+                   TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE)
+table(true_or_false)
+```
+
+$$\\[0.1in]$$
+
+## Two dimensional data structures
+
+If you are wondering if you can make a collection of collections... The answer is yes! These are called two-dimensional data structures because they can be represented as a table.
+
+Lists can contain vectors but vectors can't contain lists.
+```{r}
+list_of_vectors <- list("some_numbers" = c("ten" = 10, "twenty_four" = 24, "thirty_six" = 36), 
+                        "some_names" = c("a" = "anita", "b" = "ben", "c" = "chris"))
+
+print("My list of vectors:")
+list_of_vectors
+```
+
+You can access a specific item by using a combination of the access operands, such as:
+```{r}
+paste("First number of first vector:", list_of_vectors$some_numbers["ten"])
+paste("Second name in my second vector:", list_of_vectors[["some_names"]]["a"])
+```
+
+Collections keep their numeric indexes so you can also do
+```{r}
+paste("Third name in my second vector:", list_of_vectors[[2]][3])
+# Or
+paste("Third name in my second vector:", list_of_vectors$some_names[3])
+
+# It is all the same :-)
+```
+
+A cool couple of functions that will help you out if you forget what a variable contains are `str()` (from structure) and `summary()`.
+```{r}
+print("Str says:")
+str(list_of_vectors)
+
+print("Summary says:")
+summary(list_of_vectors)
+```
+
+As you can see, it's a quick recap of what this variable is. In this case, str will tell you that I passed a list of length 2 (2 vectors), named "some_numbers" - a named numeric vector - and "some_names" - a named char (character) vector. It also tells you their values and their "attr" (short for *attributes* - a defining characteristic of a variable, in this case their names!).
+
+Summary's output depends on what type of variable you pass. For a list it is a bit of a shortened version of str. It simply lists what is contained on it, the length of each of those things, and their class.
+
+If you would ask for a summary of a numeric vector, it will give you some information about the distribution of the contained values.
+```{r}
+numeric_vector <- c(14, 50, 23, 43, 100, 2)
+summary(numeric_vector)
+```
+
+It is a neat function to explore different variable types!
+
+### Matrices and dataframes
+
+Lists and vectors are all ok, but it would become quite annoying if these would be super long. Right? This is where *matrices* and *dataframes* come in handy.
+
+Both of these data types can be visualized as a table or grid - like an excel file. Let's load one, but first we need to load the xlsx *library*. A library is a bunch of code written by other people that helps with a particular purpose - in this case reading and writing to excel files. We are going to read the file (specifying the sheet index number - in this case the first sheet), and print the "head" (first 6 entries without counting the header) of the file.
+
+```{r}
+library(xlsx) 
+coldata <- read.xlsx("/Volumes/MyPassport/courses/basic_R/metadata_AA.xlsx", sheetIndex = 1)
+head(coldata)
+```
+
+**A quick note about paths...**
+
+If this is the first time you have seen the name of a file written like this, you are probably wondering why we wrote it like this, and why do we need to specify such a long name. A path is simply the location in our system of a particular file. The path in the exercise is called an **absolute path**. This means that it is the most complete address you can give from the file in question. In this case we are looking for the file in (from right to left) a directory called `basic_R`, which is inside the `courses` directory, on `MyPassport` - which is an external hard drive that you can find in `Volumes`. Our file system starts at root (`/`), so all absolute paths start from there. 
+
+We can freely move in our file system to list and create files. To check your current location in your system you can do `getwd()` in R - which stands for "get working directory". Similarly, you can set your working directory to somewhere convenient like your desktop:
+
+```{r}
+setwd("/Users/student/Desktop/")
+```
+
+You can then access files stored in your desktop without having to specify the absolute path. For example, if you stored your metadata sheet in your desktop, you could now do `read.xlsx("metadata_AA.xlsx", sheetIndex = 1)` instead.
+
+RStudio is pretty handy and can auto-complete paths for you (to aviod typos). If you open quotes and then press tab, it will list the files or directories in your current working directory.
+
+**Back to the exercise...**
+
+`read.xlsx()` will automatically load the contents of the excel file in a dataframe. Let's see what sort of variables it contains
+```{r}
+str(coldata)
+```
+This is a metadata excel file from a PhD student (we will call him Steve) - it lists all samples in his experiment and some relevant information about them. 
+
+Steve had some trouble when typing the name of the last column, so we need to fix that for him... To do this, we will make use of the function `colnames()`, which will return the attribute of column names in the dataframe. 
+```{r}
+colnames(coldata)
+```
+
+We can edit the contents of this attribute, by assigning it a new value. You can either pass the entire vector with new column names, or if we can specify which column we need to change the attribute for (in this case column 5 and 6)
+```{r}
+colnames(coldata) <- c("sample", 
+                       "cell_line", 
+                       "organism", 
+                       "type", 
+                       "condition", 
+                       "sequencing_batch")
+head(coldata)
+```
+Much better. 
+
+Now we can extract some information about these, since I'm Steve's bioinformatician but don't know much about his samples..
+```{r}
+paste("Steve sequenced", nrow(coldata), "samples") 
+# nrow as in "number of rows" (ncol for number of columns)
+```
+
+One can access each row or column by specifying it on brackets like: [row index number or name, column index number or name]. If you keep one of these brackets-slots empty, it will return all. E.g. `dataframe[1,]` will return first row, all columns. 
+```{r}
+print("Sample names:")
+coldata[,1] # All sample names
+
+print("Sample names:")
+coldata[,"sample"] # Same 
+```
+
+Alternatively, one can access columns (but not rows) as a named list
+```{r}
+print("Sample names:")
+coldata$sample
+```
+
+Let's name the rows per sample
+```{r}
+rownames(coldata) <- coldata$sample
+```
+
+Now we can access information per sample simply by doing
+```{r}
+coldata["AA121",]
+```
+
+When one extracts a row or a column from a dataframe, it is important to note that `$` or `[x,y]` will return a vector.
+
+Can you find out how many samples we have per organism? (Remember `table()`? It can take more than one vector (in this case the values of a column)!)
+
+The output of `table()` behaves like a named vector - although it is it's own class "table" (you can verify this doing `class(table(coldata$cell_line))`). We can filter it as if it was a vector, for example, to keep only the `unique()` values:
+```{r}
+table(coldata$cell_line)
+paste(unique(table(coldata$cell_line)), "samples per cell line!")
+```
+
+We can also extract a certain value out of a table the same way we would do to extract something of a named vector:
+```{r}
+paste("We have", table(coldata$organism)["human"], "human samples!")
+```
+
+Can you find out how many conditions we have in this experiment?
+```{r}
+unique_conditions <- unique(coldata$condition)
+
+paste("There are", length(unique_conditions), "unique conditions")
+table(coldata$cell_line, coldata$condition)
+print("Each of them have five samples per cell line. Good job Steve.")
+```
+$$\\[0.1in]$$
+
+## Basic operations
+
+R has a bunch of "built-in" functions (operations you can make use of right after installing R without the need to installing anything else). Here are a few basic examples of very handy functions:
+
+### Arithmetics
+
+* Sum (`sum()`)
+
+* Round (`round()`)
+
+* Round down (`floor()`)
+
+* Round up (`ceiling()`)
+
+* Absolute values (`abs()`)
+
+* Minimum (`min()`)
+
+* Maximum (`max()`)
+
+* Log (`log()`, `log2()`, or `log10()`)
+
+* Exponential (`exp()`)
+
+```{r}
+cat(paste("We will use our numeric_vector for these examples.\nHere are the values:",
+            paste(numeric_vector, collapse = ", ")))
+```
+
+```{r}
+print(paste("The total sum of the numeric_vector is:", sum(numeric_vector)))
+print(paste("The largest number in the array is:", max(numeric_vector)))
+print(paste("The smallest number in the array is:", min(numeric_vector)))
+print(paste("The log2 of the largest number is:", log2(max(numeric_vector))))
+print(paste("Let's round that number to:", round(log2(max(numeric_vector)))))
+print(paste("Or being modest:", floor(log2(max(numeric_vector)))))
+print("We can also check the log2 of the entire array:")
+log2(numeric_vector)
+print("What about the exponential?")
+exp(numeric_vector)
+```
+
+### Basic statistics
+
+* Mean (`mean()`)
+
+* Median (`median()`)
+
+* Standard deviation (`sd()`)
+
+* Quantiles (`quantile()`)
+
+```{r}
+print(paste("The mean of the array is:", mean(numeric_vector)))
+print(paste("The median is:", median(numeric_vector)))
+print(paste("The standard deviation is:", median(numeric_vector)))
+print("The quantiles of the array are:")
+quantile(numeric_vector)
+```
+
+You can find many more in your cheatsheets!
+
+$$\\[0.1in]$$
+
+## Conditionals
+
+Many times it's handy to ask R the question directly. So, if we want to know how many human samples there are, instead of making a table and extracting the answer from it, we can just ask directly 
+```{r}
+coldata$organism == "human"
+```
+This returned a vector of the same length as our input (in this case 75, as we have 75 samples) evaluating if each item in the vector (`coldata$organism`) is human (`TRUE`) or not (`FALSE`). 
+
+There are several conditional operations:
+
+`a == b` means "is `a` equal to `b`?" 
+
+`a != b` means "is `a` not equal to `b`?" 
+
+`a > b` means "is `a` greater than `b`?" (numerics only) 
+
+`a < b` means "is `a` lower than `b`?" (numerics only) 
+
+`a => b` means "is `a` greater or equal to `b`?" (numerics only) 
+
+`a =< b` means "is `a` lower or equal to `b`?" (numerics only) 
+
+You can also summarize the output of these conditionals with `table()`
+```{r}
+table(coldata$organism == "human")
+```
+
+You can also use conditionals to perform operations over those entries that satisfy the condition with `ifelse()`. Let's say we want to change the column "condition" to contain the same value for guide 1 and guide 2 (two crispr guides Steve is trying to knock down a particular gene), and a different one for the lacz controls.
+
+`ifelse()` will take a condition (in this case `coldata$condition != "lacz"`) and two other values: the first one will be returned if the condition is satisfied (`TRUE`), otherwise the second one will be returned (`FALSE`).
+
+Here are the results of the conditional
+```{r}
+coldata$condition != "lacz"
+```
+
+Now we pass our values to ifelse and assign it to a new column
+```{r}
+print("Here is what ifelse returns")
+ifelse(coldata$condition != "lacz", "KD", "control")
+
+# Now we assign it to the new column kd_ctrl
+coldata$kd_ctrl <- ifelse(coldata$condition != "lacz", "kd", "ctrl")
+head(coldata)
+```
+
+Let's say you want to see only the knock-down samples. To do this, you would need to keep track of *which* rows satisfy the condition `coldata$kd_ctrl == "kd"`.
+
+The function `which()` will take a conditional and return the index of those that satisfy it
+```{r}
+which(coldata$kd_ctrl == "kd")
+```
+
+We can then use these values to subset `coldata`. We will need to pass these in the brackets (remember: [row number(s), column number(s)])
+Here we just print the first few lines, but you can see the entire output for yourself! :-)
+```{r}
+head(coldata[which(coldata$kd_ctrl == "kd"),])
+```
+
+$$\\[0.1in]$$
+
+## Multiple conditionals
+
+You can combine different logic operations using the operands "&" (and), or "|" (or). You can also negate the results of a conditional (opposite) using "!" (negate).
+
+For example, the human translation of the following example would be "which samples are of cell lines pt6 *or* sandra"
+```{r}
+coldata$cell_line == "pt6" | coldata$cell_line == "sandra"
+```
+
+Which returned a vector of booleans answering the question for each entry we have. We can extract the indexes of the entries satisfying the condition using `which()`
+```{r}
+which(coldata$cell_line == "pt6" | coldata$cell_line == "sandra")
+```
+
+And finally get all the columns of coldata of those rows
+```{r}
+head(coldata[which(coldata$cell_line == "pt6" | coldata$cell_line == "sandra"),])
+```
+
+But what if we want to get everything *except* samples from cell lines pt6 *or* sandra? We can simply use the negate operand right before the conditional (be sure to group the two conditionals first in a parenthesis, otherwise it will just negate the first conditional `coldata$cell_line == "pt6"`)
+```{r}
+head(coldata[which(!(coldata$cell_line == "pt6" | coldata$cell_line == "sandra")),])
+```
+The operand *and* works similarly. You can combine two operations and only allow it to be satisfied if *both* of them are.
+
+For example, let's say I want the sample names of the g2 joc samples (that is, condition must be g2 *and* cell line must be joc)
+
+```{r}
+head(coldata[which(coldata$cell_line == "joc" & coldata$condition == "g2"), "sample"])
+```
+
+What about sample names of the joc samples which are *not* g2?
+
+```{r}
+# Either this
+coldata[which(coldata$cell_line == "joc" & coldata$condition != "g2"), "sample"]
+# Or this works
+coldata[which(coldata$cell_line == "joc" & !coldata$condition == "g2"), "sample"]
+```
+
+$$\\[0.1in]$$
+
+### Other handy conditional functions / operands
+
+* Find a pattern on a character object (`grepl()`)
+
+* Check if a character object starts or ends with a motif (`startsWith()` or `endsWith()`)
+
+* The %in% operand
+
+```{r}
+print("Which cell lines start with h? (case-sensitive)")
+startsWith(coldata$cell_line, "h")
+print("Which end with 6?")
+endsWith(coldata$cell_line, "6")
+print("Which contain the letter a?")
+grepl("a", coldata$cell_line)
+
+most_interesting_cell_lines <- c("joc", "h6")
+print("Which are samples from the most interesting cell lines?")
+coldata$cell_line %in% most_interesting_cell_lines
+```
+
+### Exercise
+Please help Steve finding out:
+
+- What type of cell lines are these? How many are iPSC? How many are ESC?
+
+- How many samples were sequenced in each sequencing batch?
+
+- List of the samples that were sequenced in sequencing batch #1
+
+- List of the joc and sandra chimpanzee lacz samples sequenced in batch #1
+
+$$\\[0.1in]$$
+
+## Three (or more) dimensional data structures
+
+Ok, we are getting greedy -if you are wondering if can we make three dimensional data structures (or even more dimensions!!)? YES! Same logic, more headaches.
+
+Let's say we want to split this dataframe into two - to keep things organised. We will make a list of two data frames, one with the chimps, and the other one with the humans
+```{r}
+coldatas_organisms <- split(coldata, coldata$organism)
+names(coldatas_organisms)
+```
+
+Now we can access them individually as:
+```{r}
+head(coldatas_organisms$human)
+```
+
+And access their information as we normally would with a data frame. Here I am taking all h6 samples
+```{r}
+head(coldatas_organisms$human[which(coldatas_organisms$human$cell_line == "h6"),])
+```
+
+$$\\[0.1in]$$
+
+## Debugging
+
+So far we have seen how to define different variable types, work with them, we have read files and made summaries of their contents. 
+
+Super common mistakes on these sort of operations are:
+
+* You used the wrong logic operand
+
+* You are missing a parenthesis (either one or the two)
+
+* You are trying to access a row or a column that is not named as you think (remember these things are case sensitive)
+
+* You are trying to access a row or a column that does not exist (for example, if you say you want to access column 5 of the data frame - are you sure your data frame has 5 columns?)
+
+
+Some strategies that you should remember when debugging are:
+
+* Check what you are working with: Is the input to your command really what you think it is? 
+
+* Divide and conquer: If the command you are trying to run is long or has, for example, several conditions, try to test things in parts. Or even better, break it down into two or more smaller commands (it will probably be more readable anyway)
+
+* Think like a robot: Think twice if what you are writing is **literally** what you want to execute. What other interpretations could the code you wrote have?
+
+* When working with a script, narrow down where the problem could be: Can you pinpoint what line of code could be causing the problem?
+
+* Check the output. ALWAYS. Problems usually happen when running several commands in chain without checking the intermediate outputs. Running things line by line and printing everything is sometimes (many times) needed.
+
+
+If you tried all these and you still have a weird error, rest assured that chances are thousands of people had the exact same one. Googling skills are needed as a programmer.
+
+You will find stackoverflow.com to be your best friend from now on. Stackoverflow is a Q&A website for programmers. Most of the times, you will find the same or a similar question to the one you have, and most likely an answer to it. They can give you hints on to why a particular error might occur, but can also give you advice or ideas on to how to implement something in particular. Don't be afraid to try running copy-pasted code, that's how one learns :-).
+
+## Exercise
+
+
+
